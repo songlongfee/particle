@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    html,body{
+      margin: 0;
+      height: 100%;
+    }
+    canvas{
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="cvs"></canvas>
+  <script>
+    var cvs = document.getElementById('cvs');
+    cvs.width = document.body.offsetWidth;
+    cvs.height = document.body.offsetHeight;
+    
+    window.onresize = function () {
+      cvs.width = document.dody.offsetWidth;
+      cvs.height = document.body.offsetHeight;
+    }
+    
+    var ctx = cvs.getContext('2d');
+    var starList = [];
+    cvs.addEventListener('mousemove', function(e) {
+      starList.push(new Star(e.offsetX, e.offsetY));
+    })
+
+    function random(min, max) {
+      return Math.floor((max - min) * Math.random() + min);
+    }
+
+    function Star(x, y) {
+      this.x = x;
+      this.y = y;
+      this.opacity = 1;
+      this.color = 'rgba(' + random(0, 256) + ',' + random(0, 256) + ',' + random(0, 256) + ',' + this.opacity +')';
+      this.vx = (Math.random() - 0.5) * 3;
+      this.vy = (Math.random() - 0.5) * 3;
+      this.draw();
+    }
+    Star.prototype = {
+      draw: function() {
+        ctx.beginPath();
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = this.opacity;
+        ctx.globalCompositeOperation = "lighter";
+        ctx.arc(this.x, this.y, 10, 0, Math.PI * 2, false);
+        ctx.fill();
+        this.update();
+      },
+      update: function () {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.opacity *= 0.98;
+      }
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, cvs.width, cvs.clientHeight);
+      starList.forEach(function(ele, index) {
+        ele.draw();
+        if(ele.opacity < 0.05) {
+          starList.splice(index, 1);
+        }
+      })
+      requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render)
+
+  </script>
+</body>
+</html>
